@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instagram Post Selector</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            max-width: 500px;
+            background: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            padding: 20px;
+            text-align: center;
+        }
+        .popup input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        .popup img {
+            width: 100px;
+            margin-bottom: 10px;
+        }
+        .popup .post {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        .popup .post input[type="checkbox"] {
+            margin-right: 10px;
+        }
+        .popup button {
+            padding: 10px 20px;
+            background: #007BFF;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+        .popup button:hover {
+            background: #0056b3;
+        }
+        .post-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .post-list .post-item {
+            width: 30%;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .post-list img {
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+    <h1 style="text-align: center;">Instagram Post Selector</h1>
+
+    <!-- Button to trigger the popup -->
+    <div style="text-align: center;">
+        <button id="openPopup">Buy Instagram Likes/View</button>
+    </div>
+
+    <!-- Popup Form -->
+    <div id="popup" class="popup">
+        <h2>Select Instagram Posts</h2>
+        <input type="text" id="username" placeholder="Enter Instagram Username" required>
+        <div id="postList" class="post-list"></div>
+        <button id="submitPosts">Submit</button>
+    </div>
+
+    <!-- Display selected posts here -->
+    <div id="selectedPosts" style="text-align: center; margin-top: 20px;">
+        <h2>Selected Posts</h2>
+        <ul id="submittedPostList"></ul>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/gh/stevenschobert/instafeed.js@2.0.0rc1/src/instafeed.min.js"></script>
+    <script type="text/javascript">
+        document.getElementById('openPopup').addEventListener('click', function() {
+            document.getElementById('popup').style.display = 'block';
+        });
+
+        document.getElementById('username').addEventListener('input', function() {
+            const username = this.value.trim();
+            if (username) {
+                fetch(`https://api.instagram.com/v1/users/search?q=${selenagomez}&access_token=IGAAImokBKnW1BZAE9zOW12UmZAYUXRPRXZAMd084bU5QcWtGVjJFYXI4LUtSOVdlWkJ2aDFoQi1IcVVZAMU5zV3BSY1p2UTc2R0FWVldSTTFqYUF0WGJQQjVURkxFb1EtZA1ZAmYjduVW5ZAdFBLM2F1NUNuSlRObVU3VVRna0N5MVdYdwZDZD`)
+                    .then(response => response.json())
+                    .then(data => {
+                        displayPosts(data.data);
+                    });
+            }
+        });
+
+        function displayPosts(posts) {
+            const postList = document.getElementById('postList');
+            postList.innerHTML = '';
+            posts.forEach(post => {
+                const postItem = document.createElement('div');
+                postItem.classList.add('post-item');
+                postItem.innerHTML = `
+                    <input type="checkbox" name="post" value="${post.id}">
+                    <img src="${post.images.thumbnail.url}" alt="Post Image">
+                    <p>${post.caption ? post.caption.text : 'No caption'}</p>
+                `;
+                postList.appendChild(postItem);
+            });
+        }
+
+        document.getElementById('submitPosts').addEventListener('click', function() {
+            const selectedPosts = Array.from(document.querySelectorAll('input[name="post"]:checked'))
+                .map(checkbox => checkbox.value);
+            if (selectedPosts.length === 0) {
+                alert('Please select at least one post.');
+                return;
+            }
+            displaySelectedPosts(selectedPosts);
+        });
+
+        function displaySelectedPosts(selectedPosts) {
+            const submittedPostList = document.getElementById('submittedPostList');
+            submittedPostList.innerHTML = '';
+            selectedPosts.forEach(postId => {
+                const listItem = document.createElement('li');
+                listItem.textContent = `Selected Post ID: ${postId}`;
+                submittedPostList.appendChild(listItem);
+            });
+            document.getElementById('popup').style.display = 'none';
+        }
+    </script>
+
+</body>
+</html>
