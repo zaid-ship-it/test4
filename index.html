@@ -98,7 +98,7 @@
         document.getElementById('username').addEventListener('input', function() {
             const username = this.value.trim();
             if (username) {
-                fetch(`https://api.instagram.com/v1/users/search?q=${selenagomez}&access_token=IGAAImokBKnW1BZAE9zOW12UmZAYUXRPRXZAMd084bU5QcWtGVjJFYXI4LUtSOVdlWkJ2aDFoQi1IcVVZAMU5zV3BSY1p2UTc2R0FWVldSTTFqYUF0WGJQQjVURkxFb1EtZA1ZAmYjduVW5ZAdFBLM2F1NUNuSlRObVU3VVRna0N5MVdYdwZDZD`)
+                fetch(`https://graph.facebook.com/v21.0/users/search?q=cristiano&access_token=EAAQQMZBwgXOIBO3Szw5rQ8IKsVUkhZAvn1GPH2YkZByuUHPUbBbU43PQVS8yg2Wsy8JeGa2Ud9PDiGNgw0EYQ5Fh6vM003ZBrYCPgjKGHPzvSjFlGhufOezMLPheItwpADS1waFCTunahfBe9DgA2r4jPtVprtC57Ux5gtLiMl9Qgzb4mka527x70ZCK7SLKSWcp972D3ikCDH08KrQZDZD`)
                     .then(response => response.json())
                     .then(data => {
                         displayPosts(data.data);
