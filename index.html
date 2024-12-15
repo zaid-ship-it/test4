@@ -3,12 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Instagram Feed Viewer</title>
+    <title>Instagram Post Fetcher</title>
     <style>
         body { font-family: Arial, sans-serif; }
-        .post { margin: 10px 0; }
-        .post img { max-width: 100%; height: auto; }
-        .post p { font-size: 14px; color: #333; }
+        h1 { text-align: center; }
+        form { margin: 20px auto; text-align: center; }
+        input, button { padding: 10px; font-size: 16px; margin: 5px; }
+        #posts { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+        .post { width: 200px; text-align: center; }
+        .post img { width: 100%; height: auto; }
     </style>
 </head>
 <body>
@@ -24,56 +27,36 @@
         document.getElementById("instagramForm").addEventListener("submit", async function (e) {
             e.preventDefault();
             const username = document.getElementById("username").value;
-
-            // Apify Scraper API endpoint
-            const apifyUrl = "https://api.apify.com/v2/actor-tasks/YOUR_TASK_ID/runs";
-            const apifyToken = "apify_api_uhDAwKsgCLMJDXWOtdgl3gJhK9dIMZ0QNS7w";
+            const apiUrl = "https://api.apify.com/v2/acts/apify~instagram-post-scraper/run-sync?token=apify_api_uhDAwKsgCLMJDXWOtdgl3gJhK9dIMZ0QNS7w";
 
             try {
-                const response = await fetch(apifyUrl, {
+                // Sending request to Apify's Instagram scraper
+                const response = await fetch(apiUrl, {
                     method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": `Bearer ${apifyToken}`
-                    },
+                    headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ username: username })
                 });
 
-                const runData = await response.json();
-                const runId = runData.id;
-
-                // Polling to check when the run completes
-                const runStatusUrl = `https://api.apify.com/v2/actor-tasks/YOUR_TASK_ID/runs/${runId}`;
-                let runComplete = false;
-                let output;
-
-                while (!runComplete) {
-                    const statusResponse = await fetch(runStatusUrl, {
-                        headers: { "Authorization": `Bearer ${apifyToken}` }
-                    });
-                    const statusData = await statusResponse.json();
-
-                    if (statusData.status === "SUCCEEDED") {
-                        runComplete = true;
-                        output = statusData.data;
-                    }
-                    await new Promise(resolve => setTimeout(resolve, 5000)); // Wait 5 seconds before checking again
+                const data = await response.json();
+                if (data.data && data.data.length > 0) {
+                    displayPosts(data.data);
+                } else {
+                    alert("No posts found or the username is private.");
                 }
-
-                displayPosts(output);
             } catch (error) {
                 console.error("Error fetching posts:", error);
+                alert("An error occurred while fetching posts. Please try again.");
             }
         });
 
         function displayPosts(posts) {
             const postsDiv = document.getElementById("posts");
-            postsDiv.innerHTML = "";
+            postsDiv.innerHTML = ""; // Clear previous results
             posts.forEach(post => {
                 const postElement = `
                     <div class="post">
-                        <img src="${post.media_url}" alt="${post.caption}">
-                        <p>${post.caption}</p>
+                        <img src="${post.imageUrl}" alt="Post Image">
+                        <p>${post.caption || "No caption provided"}</p>
                     </div>`;
                 postsDiv.innerHTML += postElement;
             });
