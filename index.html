@@ -68,6 +68,11 @@
 </head>
 <body>
 
+    <fb:login-button 
+  scope="public_profile,email"
+  onlogin="checkLoginState();">
+</fb:login-button>
+
     <h1 style="text-align: center;">Instagram Post Selector</h1>
 
     <!-- Button to trigger the popup -->
@@ -178,12 +183,6 @@ FB.getLoginStatus(function(response) {
         userID:'...'
     }
 }
-
-        
-<fb:login-button 
-  scope="public_profile,email"
-  onlogin="checkLoginState();">
-</fb:login-button>
         
 function checkLoginState() {
   FB.getLoginStatus(function(response) {
